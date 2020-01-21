@@ -6,13 +6,16 @@ public class UnionFind {
   private int N;
   private int[] arr;
   private int[] rootSize;
+  private int[] maxElements;
 
   public UnionFind(int N) {
     this.N = N;
     this.arr = new int[N];
     this.rootSize = new int[N];
+    this.maxElements = new int[N];
     for (int i = 0; i < N; i++) {
       this.arr[i] = i;
+      this.maxElements[i] = i;
       this.rootSize[i] = 1;
     }
   }
@@ -27,12 +30,20 @@ public class UnionFind {
   public void union(int p, int q) {
     int pRoot = root(p);
     int qRoot = root(q);
+    if(pRoot == qRoot) return; // they are connected already
 
     int largerComp = this.rootSize[pRoot] >= this.rootSize[qRoot] ? pRoot : qRoot;
     int smallerComp = this.rootSize[pRoot] < this.rootSize[qRoot] ? pRoot : qRoot;
+    int maxEleOfLargerComp = this.maxElements[largerComp];
+    int maxEleOfSmallerComp = this.maxElements[smallerComp];
     this.arr[smallerComp] = this.arr[largerComp];
     this.rootSize[largerComp] += this.rootSize[smallerComp];
-    this.rootSize[smallerComp] = 0;
+    this.maxElements[largerComp] = Math.max(maxEleOfLargerComp, maxEleOfSmallerComp);
+//    this.rootSize[smallerComp] = 0;
+  }
+
+  public int maxElement(int i) {
+    return this.maxElements[root(i)];
   }
 
   public boolean connected(int p, int q) {
@@ -67,9 +78,13 @@ public class UnionFind {
     uf1.union(3, 2);
     uf1.union(4, 5);
     uf1.union(8, 9);
+    System.out.println(uf1.maxElement(1));
     System.out.println(uf1.connected(1, 3));
     System.out.println("total components =" + uf1.count());
     uf1.union(3, 9);
+    System.out.println(uf1.maxElement(3));
+    System.out.println(uf1.maxElement(8));
+
     System.out.println(uf1.connected(2, 8));
     System.out.println(uf1);
     System.out.println("total components =" + uf1.count());
@@ -84,6 +99,9 @@ public class UnionFind {
     uf1.union(10,8);
     System.out.println(uf1.connected(19,3));
     System.out.println(uf1);
-
+    System.out.println(uf1.connected(6,1));
+    uf1.union(6,1);
+    System.out.println(uf1);
+    System.out.println(uf1.maxElement(10));
   }
 }
